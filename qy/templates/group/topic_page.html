@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %} {{ topic.title }} - 小组话题 | 雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/topic_page.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div id="mainbar" class="col-md-8">
+			<!-- 话题 -->
+			<div>
+				<h3>
+					<img class="avatar img-thumbnail" src="{{ topic.author.avatar_url }}">
+					<span>{{ topic.title }}</span>
+				</h3>
+				<p>{{ topic.description }}</p>
+				<p class="small text-muted">
+					<span>来自 {{ topic.author.name }}</span>
+					<span>&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</span>
+					<span>发布于 {{ topic.post_time }}</span>
+					<span>&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</span>
+					<span>热度 ：{{ pagination.total }}</span>
+					<span>&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</span>
+					{% if current_user.id==topic.author_id %}
+					<a href="{{ url_for('group.delete_topic', gid=topic.group_id, tid=topic.id) }}">删除</a>
+					{% endif %}
+				</p>
+			</div>
+
+			<!-- 讨论列表 -->
+			<table class="table table-hover">
+				<tbody>
+				{% for discu in discus %}
+					<tr>
+						<td>
+							<a href="{{ url_for('member.member_page', userid=discu.author.id) }}"  title="{{ discu.author.name }}" target="_blank">
+      							<img class="avatar media-object img-thumbnail" src="{{ discu.author.avatar_url }}" alt="{{ discu.author.name }}">
+   							</a>
+   						</td>
+						<td>
+				     	 	<p class="text-muted h6">
+				     	 		<span class="badge">{{ loop.index }}</span>
+				     	 		<span>&nbsp;&brvbar;&nbsp;</span>
+				      			<span>发表于 {{ moment(discu.post_time, local=True).fromNow() }}</span>
+				      			<span>&nbsp;&brvbar;&nbsp;</span>
+				      			{% if current_user.id==discu.author_id %}
+				      			<a href="{{ url_for('group.delete_discu', gid=discu.topic.group_id, tid=discu.topic_id, did=discu.id) }}">删除</a>
+				      			{% endif %}
+				      		</p>
+				      		<p>{{ discu.content }}</p>
+						</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+
+			<!-- 回复 -->
+			{% if current_user.is_authenticated %}
+				{% if current_user.is_joining(topic.group) %}
+				{{ wtf.quick_form(form, button_map={'reply': 'success pull-right'}) }}
+				{% endif %}
+			{% endif %}
+
+			<!-- 分页器 -->
+			{% if pagination %}
+			<div>
+				{{ macros.pagination_widget(pagination, 'group.topic_page', gid=topic.group_id, tid=topic.id) }}
+			</div>
+			{% endif %}
+		</div>
+
+		<div class="col-md-1"><!-- 留白 --></div>
+
+		<div id='sidebar' class="col-md-3">
+			<ul class="list-unstyled">
+				<li>
+					<span>&gt;&nbsp;回到</span>
+					<a href="{{ url_for('group.group_page', gid=topic.group.id) }}">{{ topic.group.name }}</a>
+					<span>的主页</span>
+				</li>
+				<!-- <li>&gt;&nbsp;<a href="" target="_blank">管理</a></li> -->
+			</ul>
+		</div>
+	</div>
+</div>
+{% endblock %}

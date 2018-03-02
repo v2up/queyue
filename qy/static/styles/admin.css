@@ -1,0 +1,26 @@
+.greet {
+	background-color: #f6f5f2;
+	border-bottom: 2px dotted #8b1042;
+	padding: 1em;
+	/*color: #8b1042;*/
+}
+
+.greet h2{
+	margin: 0px;
+}
+
+.nav {
+	margin-top: 2em;
+}
+
+.modal-dialog {
+	background-color: #ffffff;
+}
+
+/*.mainbar {
+	background-color: #E0E3DA;
+}*/
+
+.sidebar {
+	background-color: #f6f5f2;
+}

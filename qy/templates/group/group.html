@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% import "_macros.html" as macros %}
+
+{% block title %}小组话题 | 雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/group.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div id="mainbar" class="col-md-8">
+			<h2>小组话题</h2>
+			<!-- 话题列表 -->
+			<div>
+				<table class="table table-hover">	<!-- list-unstyled -->
+					<caption>（我关注的）小组中的话题</caption>
+					<thead>
+						<th>序号</th>
+						<th>标题</th>
+						<th>时间</th>
+						<th>热度</th>
+					</thead>
+					<tbody>
+					{% for topic in topics %}
+					<tr>
+						<th scope="row">{{ loop.index }}</th>
+						<td><a href="{{ url_for('group.topic_page', gid=topic.group_id, tid=topic.id) }}" target="_blank">{{ topic.title }}</a></td>
+						<td>{{  moment(topic.post_time, local=True).fromNow() }}</td>
+						<td>{{ topic.discus.count() }}</td>
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			</div><!-- 话题列表 -->
+
+			<!-- 分页器 -->
+			{% if pagination %}
+			<div>
+				{{ macros.pagination_widget(pagination, 'group.group_index') }}
+			</div>
+			{% endif %}
+		</div><!-- col-md-8 -->
+
+		<div class="col-md-1"><!-- 留白 --></div>
+
+		<div id='sidebar' class="col-md-3">
+			<hr />
+			<!-- 功能指引 -->
+			<ul class="list-unstyled">
+				<li>&gt;&nbsp;<a href="{{ url_for('member.stuff', userid=current_user.id, obj='groups') }}" target="_blank">我加入的小组</a></li>
+				<li>&gt;&nbsp;<a href="{{ url_for('group.group_new') }}" target="_blank">新建一个小组</a></li>
+				<hr />
+			</ul>
+
+			<!-- 小组推荐 -->
+			<div>
+				<h4>小组推荐&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</h4>
+				<div>
+					{% for new_group in new_groups %}
+					<a href="{{ url_for('group.group_page', gid=new_group.id) }}" title="{{ new_group.name }}" target="_blank">
+						<img class="avatar-m img-thumbnail" src="{{ new_group.icon_url }}" alt="{{ new_group.name }}">
+					</a>
+					{% endfor %}
+				</div>
+				<hr />
+			</div>
+
+			<!-- 新话题 -->
+			<div>
+				<h4>新话题&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</h4>
+				<ul  class="list-unstyled">
+					{% for new_topic in new_topics %}
+					<li>
+						<span>&ordm;&nbsp;</span>
+						<a href="{{ url_for('group.topic_page', gid=new_topic.group_id, tid=new_topic.id) }}" target="_blank">{{ new_topic.title }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+				<hr />
+			</div>
+			
+		</div><!-- col-md-3 -->
+	</div><!-- row -->
+</div><!-- container -->
+{% endblock %}

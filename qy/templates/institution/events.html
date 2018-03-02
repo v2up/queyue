@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}{{ insti.name }}的活动 | 雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/index.css') }}"> -->
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-2"><!-- 留白 --></div>
+		
+		<div id="mainbar" class="col-md-8">
+			<h3 class="item">
+				<span>{{ insti.name }}的活动</span>
+				<span>&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+				<span>（共 {{ pagination.total }} 项）</span>
+			</h3>
+
+			<hr />
+
+			<!-- 所有活动 -->
+			{% for event in events %}
+			<div>
+				<h3>
+					<a href="{{ url_for('event.event_page', eid=event.id) }}" target="_blank">{{ event.name }}</a>
+				</h3>
+				<p>
+					<span>{{ event.detail[:240] }}</span>
+					<a href="{{ url_for('event.event_page', eid=event.id) }}" target="_blank">阅读全部</a>
+				</p>
+				<dl class="dl-horizontal">
+				  <dt>活动地点</dt>
+				  <dd>{{ event.address }}</dd>
+				  <dt>发布时间</dt>
+				  <dd>{{ event.new_time }}</dd>
+				  <dt>。</dt>
+				  <dd><span class="{{ event.state()[0] }}">{{ event.state()[1] }}</span></dd>
+				</dl>
+			</div>
+			<hr />
+			{% endfor %}
+
+			<!-- 分页器 -->
+			{% if pagination %}
+			<div>
+				{{ macros.pagination_widget(pagination, 'institution.stuff', uurl=insti.uurl, obj='events') }}
+			</div>
+			{% endif %}
+		</div>
+
+		<div id='sidebar' class="col-md-2">
+			<!--  -->
+		</div>
+	</div>
+</div>
+{% endblock %}

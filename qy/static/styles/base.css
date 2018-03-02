@@ -1,0 +1,51 @@
+.menu {
+	background-color: #eff5fa;
+	margin-top: 32px;
+}
+
+.menu ul {
+	margin: 0px;
+}
+
+.copyright {
+	background-color: #eaf6ea;
+}
+
+.navbar {
+	background-color: #edf4ed;
+	margin-bottom: 0px;
+}
+
+.navbar > .dropdown {
+	background-color: #edf4ed;
+}
+
+.avatar-s {
+	width: 64px;
+	height: 64px;
+}
+
+.avatar-m {
+	width: 81px;
+	height: 81px;
+}
+
+.avatar-l {
+	width: 120px;
+	height: 120px;
+}
+
+.state-will {
+	background-color: #eb4982;
+	color: #ffffff;
+}
+
+.state-ing {
+	background-color: #e7266a;
+	color: #ffffff;
+}
+
+.state-ed {
+	background-color: #0c0105;
+	color: #ffffff;
+}

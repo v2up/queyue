@@ -1,0 +1,121 @@
+{% extends "bootstrap/base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-CN') }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/insti_panel.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/bootstrap-datetimepicker.min.css') }}">
+{% endblock %}
+
+{% block title %}机构资料 - 机构后台{% endblock %}
+
+{% block content %}
+<!-- 问候信息 -->
+<div>
+	<h2 class="greet text-center">欢迎你，{{ insti.name or insti.uurl|upper }}</h2>
+</div>
+
+<!-- 消息栏 -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+	<div class="alert {{ category }} alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<span>{{ message }}</span>
+	</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- 功能板 -->
+<div class="container">
+	<!-- tabs -->
+	<ul class="nav nav-tabs">
+	   	<li> 
+	   		<a href="{{ url_for('institution.notifi', uurl=insti.uurl) }}">通知</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.event', uurl=insti.uurl) }}">活动管理</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.new_event', uurl=insti.uurl) }}">发布活动</a>
+	   	</li>
+	   	<li class="active">
+	   		<a href="{{ url_for('institution.profile', uurl=insti.uurl) }}">机构资料展示</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.settings', uurl=insti.uurl) }}">账户设置</a>
+	   	</li>
+	</ul>
+
+	<!-- 资料 -->
+	<div class="tab-pane">
+		<div class="row">
+			<div class="col-md-8">
+				{{ wtf.quick_form(insti_form, button_map={'save': 'success pull-right'}) }}
+			</div>
+
+			<div class="col-md-1"></div>
+
+			<div class="col-md-3">
+				<ul class="list-unstyled">
+					<li>
+						<span>&gt;&nbsp;</span>
+						<a href="{{ url_for('institution.page', uurl=insti.uurl) }}" target="_blank">去我的主页看看</a>
+					</li>
+					<li>
+						<span>&gt;&nbsp;</span>
+						<a href="" data-toggle="modal" data-target="#certification">查看机构资质</a>
+						<!-- 机构资质模态框 -->
+						<div class="modal fade" id="certification" tabindex="-1" role="dialog" >
+						   <div class="modal-dialog">
+						      	<div class="modal-content">
+						         	<div class="modal-header">
+						            	<button type="button" class="close" data-dismiss="modal">&times;</button>
+						            	<h4 class="modal-title">	<!--  id="myModalLabel" -->
+						               		{{ insti.certi.body }}的机构资质
+						            	</h4>
+						         	</div>
+						         	<div class="modal-body">
+						            	<dl class="dl-horizontal">
+						            		<dt>认证主体</dt>
+						            		<dd>{{ insti.certi.body }}</dd>
+						            		<dt>官方网站</dt>
+						            		<dd><a href="{{ insti.certi.website }}" target="_blank">{{ insti.certi.website }}</a></dd>
+						            		<dt>机构职能</dt>
+						            		<dd>{{ insti.certi.function }}</dd>
+						            		<dt>描述</dt>
+						            		<dd>{{ insti.certi.description }}</dd>
+						            		<dt>地址</dt>
+						            		<dd>{{ insti.certi.address }}</dd>
+						            		<dt>认证时间</dt>
+						            		<dd>{{ insti.certi.certi_date }}</dd>
+						            	</dl>
+						         	</div>
+						         	<div class="modal-footer">
+						            	<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						         	</div>
+						        </div>
+						    </div><!-- /.modal-content -->
+						</div><!-- /.modal -->
+					</li>
+					<li>
+						<span>&gt;&nbsp;</span>
+						<span>账户激活日期：{{ insti.enroll_date }}</span>
+					</li>
+				</ul>
+			</div>
+		</div><!-- row -->
+	</div><!-- tab-pane -->
+
+</div>
+{% endblock %}

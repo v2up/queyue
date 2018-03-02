@@ -1,0 +1,4 @@
+{% import 'bootstrap/wtf.html' as wtf %}
+
+<!-- 『小组』表单，在创建和修改时都能用到 -->
+{{ wtf.quick_form(form, button_map={'save': 'success'}) }}

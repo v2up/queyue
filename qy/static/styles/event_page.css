@@ -1,0 +1,39 @@
+p {
+	text-indent: 2em;
+}
+
+.about {
+	color: #566270;
+}
+
+.state {
+	color: #ffffff;
+	padding: 4px;
+	border: solid 1px #e5e8eb;
+}
+
+.state-will {
+	background-color: #AACD6E;
+}
+
+.state-ing {
+	background-color: #62b651;
+}
+
+.state-ed {
+	background-color: #E71D36;
+}
+
+.category {
+	background-color: #d4d8de;
+}
+
+.s-avatar {
+	width: 128px;
+	height: 128px;
+}
+
+.m-avatar {
+	width: 64px;
+	height: 64px;
+}

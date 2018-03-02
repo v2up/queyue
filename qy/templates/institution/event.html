@@ -1,0 +1,143 @@
+{% extends "bootstrap/base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-CN') }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/bootstrap-datetimepicker.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/insti_panel.css') }}">
+{% endblock %}
+
+{% block title %}活动 - 机构后台{% endblock %}
+
+{% block content %}
+<!-- 问候信息 -->
+<div>
+	<h2 class="greet text-center">欢迎你，{{ insti.name or insti.uurl|upper }}</h2>
+</div>
+
+<!-- 消息栏 -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+	<div class="alert {{ category }} alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<span>{{ message }}</span>
+	</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- 功能板 -->
+<div class="container">
+	<!-- tabs -->
+	<ul class="nav nav-tabs">
+	   	<li> 
+	   		<a href="{{ url_for('institution.notifi', uurl=insti.uurl) }}">通知</a>
+	   	</li>
+	   	<li class="active">
+	   		<a href="{{ url_for('institution.event', uurl=insti.uurl) }}">活动管理</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.new_event', uurl=insti.uurl) }}">发布活动</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.profile', uurl=insti.uurl) }}">机构资料展示</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.settings', uurl=insti.uurl) }}">账户设置</a>
+	   	</li>
+	</ul>
+
+	<!-- 活动 -->
+	<div class="tab-pane">
+		<div class="row">
+			<div class="col-md-8">
+				<!-- 活动列表 -->
+				<table class="table table-hover">
+					<caption>已发布的活动</caption>
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>活动名称</th>
+							<th>活动状态</th>
+							<th>编辑</th>
+							<th>删除</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for event in events %}
+						<tr>
+							<!-- 序号 -->
+							<td>{{ loop.index }}</td>
+							<!-- 名称 -->
+							<td>
+								<a href="{{ url_for('event.event_page', eid=event.id) }}" target="_blank">{{ event.name }}</a>
+							</td>
+							<!-- 活动状态 -->
+							<td>
+								<span>{{ event.state()[1] }}</span>
+							</td>
+							<!-- 编辑 -->
+							<td>
+								<a href="{{ url_for('institution.edit_event', uurl=insti.uurl, eid=event.id) }}" target="_blank">
+									<span class="glyphicon glyphicon-edit"></span>
+								</a>
+							</td>
+							<!-- 删除 -->
+							<td>
+								<a href="" data-toggle="modal" data-target="#ask"><span class="glyphicon glyphicon-remove-circle"></span></a>
+								<!-- 确认框 -->
+								<div class="modal fade" id="ask" tabindex="-1" role="dialog" >
+								   <div class="modal-dialog">
+								   		<div class="modal-header">
+		        							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		        								<span aria-hidden="true">&times;</span>
+		        							</button>
+		        							<h4>确认删除？</h4>
+								      	</div>
+								        <div class="modal-footer">
+								        	<button type="button" class="btn btn-warning">
+								        		<a href="{{ url_for('institution.delete_event', uurl=insti.uurl, id=event.id) }}">确认</a>
+								        	</button>
+								        	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								        </div>
+								    </div><!-- /.modal-content -->
+								</div><!-- /.modal -->
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+
+				<!-- 分页器 -->
+				{% if pagination %}
+				<div>
+					{{ macros.pagination_widget(pagination, 'institution.event', uurl=insti.uurl) }}
+				</div>
+				{% endif %}
+			</div><!-- col-md-8 -->
+
+			<div class="col-md-1"></div>
+
+			<div class="col-md-3">
+				<ul class="list-unstyled">
+					<li><span>&gt;&nbsp;注意，已发布的活动只能修改描述和上传海报</span></li>
+				</ul>
+			</div>
+
+		</div><!-- row -->
+	</div><!-- tab-pane -->
+
+</div>
+
+{% endblock %}

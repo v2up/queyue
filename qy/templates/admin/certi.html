@@ -1,0 +1,188 @@
+{% extends "bootstrap/base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-CN') }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/admin.css') }}">
+{% endblock %}
+
+{% block title %}控制台{% endblock %}
+
+{% block content %}
+<!-- 问候信息 -->
+<div class="greet">
+	<h2 class="text-center">欢迎你，{{ current_admin.eno }}</h2>
+</div>
+
+<!-- 消息栏 -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+	<div class="alert {{ category }} alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<span>{{ message }}</span>
+	</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- 功能导航 -->
+<div class="container">
+	<!-- tabs -->
+	<ul class="nav nav-tabs">
+	   	<li class="active">
+	   		<a href="{{ url_for('admin.certi') }}">机构资质管理</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('admin.cate') }}">活动类型管理</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('admin.misc') }}">杂项</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('admin.settings') }}">管理员账号管理</a>
+	   	</li>
+	</ul>
+
+	<!-- 机构资质管理 -->
+	<div class="tab-pane mainbar">
+		<p>
+			<br />
+			<botton class="btn btn-primary" data-toggle="modal" data-target="#new_certi"><span>机构资质录入</span></botton>
+			<hr />
+		</p>
+
+		<!-- 录入模态框 -->
+		<div class="modal fade" id="new_certi" tabindex="-1" role="dialog" >
+		   <div class="modal-dialog">
+		      	<div class="modal-content">
+		         	<div class="modal-header">
+		            	<button type="button" class="close" data-dismiss="modal">&times;</button>
+		            	<h4 class="modal-title">
+		               		机构资质录入
+		            	</h4>
+		         	</div>
+		         	<div class="modal-body">
+		            	{{ wtf.quick_form(certi_form, button_map={'input': 'success pull-right'}) }}
+		            	<p><br /><br /></p>
+		         	</div>
+		        </div>
+		    </div><!-- /.modal-content -->
+		</div><!-- /.modal -->
+
+		<!-- 机构资质表 -->
+		<table class="table table-hover">
+			<caption>机构资质表</caption>
+			<thead>
+				<tr>
+					<th>序号</th>
+					<th>资质编号</th>
+					<th>认证主体</th>
+					<th>机构主页</th>
+					<th>详情</th>
+					<th>续期</th>
+					<th>删除</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for certi in certis %}
+				<tr>
+					<td>{{ loop.index }}</td>
+					<td>{{ certi.ucode }}</td>
+					<td>{{ certi.body }}</td>
+					<!-- 详情 -->
+					<td>
+						<a href="{{ url_for('institution.page', uurl=certi.insti.uurl) }}" target="_blank">{{ certi.insti.name }}</a>
+					</td>
+					<td>
+						<a href="" data-toggle="modal" data-target="#certification{{ loop.index }}">
+							<span class="glyphicon glyphicon-file"></span>
+						</a>
+						<!-- 机构资质模态框 -->
+						<div class="modal fade" id="certification{{ loop.index }}" tabindex="-1" role="dialog" >
+						   <div class="modal-dialog">
+						      	<div class="modal-content">
+						         	<div class="modal-header">
+						            	<button type="button" class="close" data-dismiss="modal">&times;</button>
+						            	<h4 class="modal-title">	<!--  id="myModalLabel" -->
+						               		{{ certi.body }}的机构资质
+						            	</h4>
+						         	</div>
+						         	<div class="modal-body">
+						            	<dl class="dl-horizontal">
+						            		<dt>认证主体</dt>
+						            		<dd>{{ certi.body }}</dd>
+						            		<dt>官方网站</dt>
+						            		<dd><a href="{{ certi.website }}" target="_blank">{{ certi.website }}</a></dd>
+						            		<dt>机构职能</dt>
+						            		<dd>{{ certi.function }}</dd>
+						            		<dt>描述</dt>
+						            		<dd>{{ certi.description }}</dd>
+						            		<dt>地址</dt>
+						            		<dd>{{ certi.address }}</dd>
+						            		<dt>认证时间</dt>
+						            		<dd>{{ certi.certi_date }}</dd>
+						            	</dl>
+						         	</div>
+						         	<div class="modal-footer">
+						            	<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						         	</div>
+						        </div>
+						    </div><!-- /.modal-content -->
+						</div><!-- /.modal -->
+					</td>
+					<!-- 续期 -->
+					<td>
+						<a href="{{ url_for('admin.extend', cid=certi.id) }}" title="过期时间：{{ certi.expiry_date }}">
+							<span class="glyphicon glyphicon-repeat"></span>
+						</a>
+					</td>
+					<!-- 删除 -->
+					<td>
+						<a href="" data-toggle="modal" data-target="#ask">
+							<span class="glyphicon glyphicon-remove-circle"></span>
+						</a>
+						<!-- 确认框 -->
+						<div class="modal fade" id="ask" tabindex="-1" role="dialog" >
+						   <div class="modal-dialog">
+						   		<div class="modal-header">
+        							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        								<span aria-hidden="true">&times;</span>
+        							</button>
+        							<h4>确认删除？</h4>
+						      	</div>
+						        <div class="modal-footer">
+						        	<button type="button" class="btn btn-warning">
+						        		<a href="{{ url_for('admin.delete_certi', id=certi.id) }}">确认</a>
+						        	</button>
+						        	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+						        </div>
+						    </div><!-- /.modal-content -->
+						</div><!-- /.modal -->
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<!-- 分页器 -->
+		{% if pagination %}
+		<div>
+			{{ macros.pagination_widget(pagination, 'admin.certi') }}
+		</div>
+		{% endif %}
+
+	</div><!-- tab-pane -->
+</div>
+
+{% endblock %}

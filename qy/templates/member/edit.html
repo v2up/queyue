@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block title %}{{ current_user.name }} - 账户管理 | 雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/member_edit.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div id="mainbar" class="col-md-8">
+			<!-- 编辑区 -->
+			<h2>更新资料</h2>
+			{{ wtf.quick_form(form, button_map={'save': 'success'}) }}
+		</div>
+		<div class="col-md-1"><!-- 留白 --></div>
+
+		<div id='sidebar' class="col-md-3">
+			<!-- 头像和人物像 -->
+			<div class="text-center">
+				<img class="avatar img-thumbnail" src="{{ current_user.avatar_url }}">
+			</div>
+			<hr />
+			<div class="text-center">
+				<img class="portrait img-thumbnail" src="{{ current_user.portrait_url }}">
+			</div>
+
+			<!-- 功能指引 -->
+			<hr />
+			<ul class="list-unstyled">
+				<li>&gt;&nbsp;<a href="{{ url_for('member.member_page', userid=current_user.id) }}" target="_blank">进入个人主页</a></li>
+			</ul>
+
+		</div>
+	</div>
+</div>
+{% endblock %}

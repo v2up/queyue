@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}发起活动 | 雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/event_new.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div id="mainbar" class="col-md-8">
+			<!-- 编辑区 -->
+			<h2>发起活动</h2>
+			<!-- 把表单包含进来 -->
+			{% include 'event/_event_form.html' %}
+		</div>
+		<div class="col-md-1"><!-- 留白 --></div>
+
+		<div id='sidebar' class="col-md-3">
+			<!-- 功能指引 -->
+			<ul class="list-unstyled">
+				<li>&gt;&nbsp;<a href="" target="_blank">发起活动的正确姿势</a></li>
+			</ul>
+
+		</div>
+	</div>
+</div>
+{% endblock %}

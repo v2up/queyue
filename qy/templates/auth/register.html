@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/register.css') }}">
+{% endblock %}
+
+{% block title %}注册账户 | 雀跃{%endblock%}
+
+{% block body %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-7"></div>
+
+		<div class="col-md-5">
+			<h1>欢迎加入雀跃！</h1>
+
+			<!-- 消息栏 -->
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			  {% if messages %}
+			    {% for category, message in messages %}
+		    	<div class="alert {{ category }} alert-dismissible" role="alert">
+					<span>{{ message }}</span>
+				</div>
+			    {% endfor %}
+			  {% endif %}
+			{% endwith %}
+
+			<hr />
+			<!-- button_map给提交按钮的背景色搞成绿色 -->
+			{{ wtf.quick_form(form, button_map={'submit': 'success'}) }}
+
+			<hr />
+			<p>已有账户？<a href="{{ url_for('auth.login') }}">登录</a></p>
+		</div>
+	</div>
+</div>
+{% endblock %}

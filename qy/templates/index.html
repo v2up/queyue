@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}雀跃 | 欢享时刻齐雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/index.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div id="mainbar" class="col-md-8">
+			{% if current_user.is_authenticated %}
+			<!-- 微博 -->
+			{{ wtf.quick_form(form, button_map={'post': 'success pull-right'}) }}
+			<p><br /><br /></p>
+
+			<!-- 动态流 -->
+			<div>
+				{% for twitter in twitters %}
+				<blockquote>
+					<p>{{ twitter.content }}</p>
+				</blockquote>
+				<p class="text-muted">
+					<small><span class="badge">{{ loop.index }}</span></small>
+					<small>&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</small>
+					<small>
+						<a href="{{ url_for('member.member_page', userid=twitter.author.id) }}" target="_blank">
+							{{ twitter.author.name }}
+						</a>
+					</small>
+					<small>&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</small>
+					<small>于 {{ moment(twitter.post_time, local=True).fromNow() }} 念叨</small>
+					{% if current_user.id == twitter.author_id %}
+					<small>&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</small>
+					<small><a href="{{ url_for('main.delete_twitter', id=twitter.id, next=request.path) }}">删除</a></small>
+					{% endif %}
+				</p>
+				<hr />
+				{% endfor %}
+			</div>
+
+			<hr />
+
+			{% if pagination %}
+			<div>
+				{{ macros.pagination_widget(pagination, 'main.index') }}
+			</div>
+			{% endif %}
+
+			{% endif %}
+		</div><!-- col-md-8 -->
+
+		<div class="col-md-1"><!-- 留白 --></div>
+
+		<div id='sidebar' class="col-md-3">
+			<!-- 功能指引 -->
+			<ul class="list-unstyled">
+				<!-- <li>&gt;&nbsp;<a href="" target="_blank">瑞登机</a></li> -->
+				<!-- <li></li> -->
+			</ul>
+
+			<div>
+				<h4>活动推荐&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</h4>
+				<ul  class="list-unstyled">
+					{% for event in events %}
+					<li>
+						<span>&ordm;&nbsp;</span>
+						<a href="{{ url_for('event.event_page', eid=event.id) }}" target="_blank">{{ event.name }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+				<hr />
+			</div>
+
+			<div>
+				<h4>话题推荐&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</h4>
+				<ul  class="list-unstyled">
+					{% for topic in topics %}
+					<li>
+						<span>&ordm;&nbsp;</span>
+						<a href="{{ url_for('group.topic_page', gid=topic.group_id, tid=topic.id) }}" target="_blank">{{ topic.title }}</a>
+					</li>
+					{% endfor %}
+				</ul>
+				<hr />
+			</div>
+
+			<div>
+				<h4>推广&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</h4>
+				<div>
+					<!--  -->
+				</div>
+				<hr />
+			</div>
+
+			<div>
+				<h4>新成员&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</h4>
+				<div>
+					{% for member in members %}
+					<a href="{{ url_for('member.member_page', userid=member.id) }}" target="_blank">
+						<img class="avatar img-thumbnail" src="{{ member.avatar_url }}" title="{{ member.name }}" alt="{{ member.name }}">
+					</a>
+					{% endfor %}
+				</div>
+				<hr />
+			</div>
+
+		</div><!-- col-md-3 -->
+	</div><!-- row -->
+</div><!-- container -->
+{% endblock %}

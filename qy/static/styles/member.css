@@ -1,0 +1,36 @@
+#mainbar {
+	background-color: #F8FAFF;
+}
+
+#sidebar {
+	background-color: #EFFFE9;
+}
+
+#name {
+	display: inline;
+}
+
+.avatar {
+	width: 120px;
+	height: 120px;
+	align: left;
+}
+
+.miniava {
+	width: 80px;
+	height: 80px;
+	align: left;
+}
+
+#portrait {
+	width: 240px;
+	height: 360px;
+}
+
+.item {
+	background-color: #D8E6E7;
+}
+
+#intro {
+	background-color: #fffcf0;
+}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/insti_signin.css') }}">
+{% endblock %}
+
+{% block title %}进入后台 | 雀跃{%endblock%}
+
+{% block body %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-1"></div>
+
+		<div class="col-md-5">
+			<h1>身份验证</h1>
+
+			<!-- 消息栏 -->
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			  {% if messages %}
+			    {% for category, message in messages %}
+		    	<div class="alert {{ category }} alert-dismissible" role="alert">
+					<span>{{ message }}</span>
+				</div>
+			    {% endfor %}
+			  {% endif %}
+			{% endwith %}
+
+			<hr />
+			<!-- button_map给提交按钮的背景色搞成绿色 -->
+			{{ wtf.quick_form(form, button_map={'submit': 'success'}) }}
+
+			<hr />
+			<p>还没有机构账户？<a href="">入驻雀跃</a></p>
+		</div>
+
+		<div class="col-md-6"></div>
+	</div>
+</div>
+{% endblock %}
+

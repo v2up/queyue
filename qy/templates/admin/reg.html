@@ -1,0 +1,55 @@
+{% extends "bootstrap/base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-CN') }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/admin_reg.css') }}">
+{% endblock %}
+
+{% block title %}管理员注册 - 控制台{% endblock %}
+
+{% block content %}
+	<!-- 消息栏 -->
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	  {% if messages %}
+	    {% for category, message in messages %}
+		<div class="alert {{ category }} alert-dismissible" role="alert">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<span>{{ message }}</span>
+		</div>
+	    {% endfor %}
+	  {% endif %}
+	{% endwith %}
+
+	<!-- 注册页面 -->
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-4">
+				<!-- 空白 -->
+			</div>
+
+			<div class="col-md-4 regform">
+				<h2>注册管理员</h2>
+				<hr />
+				{{ wtf.quick_form(form, button_map={'submit': 'success pull-right'}) }}
+				<p>
+					<span><br/><br/></span>
+					<a href="{{ url_for('admin.login') }}">登录</a>
+				</p>
+			</div>
+
+			<div class="col-md-4">
+				<!-- 空白 -->
+			</div>
+		</div>
+	</div>
+{% endblock %}

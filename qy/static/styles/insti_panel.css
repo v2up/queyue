@@ -1,0 +1,21 @@
+.greet {
+	background-color: #D1B6E1;
+	margin: 0px;
+	padding: 0.5em 0;
+}
+
+.noti-info {
+	background-color: #eeeeee;
+}
+
+.modal-dialog {
+	background-color: #ffffff;
+}
+
+#intro {
+	height: 17em;
+}
+
+#detail {
+	height: 24em;
+}

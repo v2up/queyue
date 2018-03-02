@@ -1,0 +1,117 @@
+{% extends "bootstrap/base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-CN') }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/admin.css') }}">
+{% endblock %}
+
+{% block title %}控制台{% endblock %}
+
+{% block content %}
+<!-- 问候信息 -->
+<div class="greet">
+	<h2 class="text-center">欢迎你，{{ current_admin.eno }}</h2>
+</div>
+
+<!-- 消息栏 -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+	<div class="alert {{ category }} alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<span>{{ message }}</span>
+	</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- 功能导航 -->
+<div class="container">
+	<!-- tabs -->
+	<ul class="nav nav-tabs">
+	   	<li>
+	   		<a href="{{ url_for('admin.certi') }}">机构资质管理</a>
+	   	</li>
+	   	<li class="active">
+	   		<a href="{{ url_for('admin.cate') }}">活动类型管理</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('admin.misc') }}">杂项</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('admin.settings') }}">管理员账号管理</a>
+	   	</li>
+	</ul>
+
+	<!-- 活动类型 -->
+	<div class="tab-pane">
+		<div class="row">
+			<div class="col-xs-8 mainbar">
+				<!-- 新类型 -->
+				{{ wtf.quick_form(cate_form, button_map={'add': 'success'}) }}
+				<hr />
+				<!-- 已有类型 -->
+				<table class="table table-hover">
+					<caption>所有活动类型</caption>
+					<thead>
+						<tr>
+							<th>序号</th>
+							<th>类型名称</th>
+							<th>删除</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for cate in cates %}
+						<tr>
+							<td>{{ loop.index }}</td>
+							<td>{{ cate.name }}</td>
+							<td>
+								<a href="" data-toggle="modal" data-target="#ask">
+									<span class="glyphicon glyphicon-remove-circle"></span>
+								</a>
+								<!-- 确认框 -->
+								<div class="modal fade" id="ask" tabindex="-1" role="dialog" >
+								   <div class="modal-dialog">
+								   		<div class="modal-header">
+		        							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		        								<span aria-hidden="true">&times;</span>
+		        							</button>
+		        							<h4>确认删除？</h4>
+								      	</div>
+								        <div class="modal-footer">
+								        	<button type="button" class="btn btn-warning">
+								        		<a href="{{ url_for('admin.delete_category', cid=cate.id) }}">确认</a>
+								        	</button>
+								        	<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+								        </div>
+								    </div><!-- /.modal-content -->
+								</div><!-- /.modal -->
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div><!-- col-xs-8 -->
+
+			<div class="col-xs-1"></div>
+			
+			<div class="col-xs-3 sidebar">
+						<!--  -->
+			</div>
+		</div>
+		
+	</div><!-- tab-pane -->
+
+</div>
+
+{% endblock %}

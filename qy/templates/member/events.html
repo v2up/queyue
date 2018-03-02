@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}{{ member.name }}的活动 | 雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/index.css') }}"> -->
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-2"><!-- 留白 --></div>
+		
+		<div id="mainbar" class="col-md-8">
+			<h3 class="item">
+				<span>{{ '我' if current_user.id == member.id else member.name }}的活动</span>
+				<span>&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+				<span>（共 {{ events|length }} 项）</span>
+			</h3>
+
+			<hr />
+
+			<div>
+				<ul class="">
+					{% for event in events %}
+					<li><a href="{{ url_for('event.event_page', eid=event.id) }}" target="_blank">{{ event.name }}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+			<hr />
+
+			{% if pagination %}
+			<div>
+				{{ macros.pagination_widget(pagination, '.stuff', userid=member.id, obj='events') }}
+			</div>
+			{% endif %}
+
+		</div>
+
+		<div id='sidebar' class="col-md-2"></div>
+
+	</div><!-- row -->
+</div>
+{% endblock %}

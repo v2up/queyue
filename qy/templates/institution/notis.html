@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}{{ insti.name }}的通知 | 雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/index.css') }}"> -->
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-2"><!-- 留白 --></div>
+		
+		<div id="mainbar" class="col-md-8">
+			<h3 class="item">
+				<span>{{ insti.name }}的通知</span>
+				<span>&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+				<span>（共 {{ pagination.total }} 则）</span>
+			</h3>
+
+			<hr />
+
+			<!-- 所有通知 -->
+			<div>
+				{% for noti in notis %}
+				<div>
+					<p class="noti-info">
+						<small class="text-muted badge">{{ loop.index }}</small>
+						<small class="text-muted">&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</small>
+						<small class="text-muted">发表于{{ noti.post_time }}</small>
+						<small class="text-muted">&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</small>
+					</p>
+					<blockquote>
+						<p>{{ noti.content }}</p>
+					</blockquote>
+				</div>
+				{% endfor %}
+			</div>
+
+			<hr />
+
+			{% if pagination %}
+			<div>
+				{{ macros.pagination_widget(pagination, 'institution.stuff', uurl=insti.uurl, obj='notis') }}
+			</div>
+			{% endif %}
+		</div>
+
+		<div id='sidebar' class="col-md-2">
+			<!--  -->
+		</div>
+	</div>
+</div>
+{% endblock %}

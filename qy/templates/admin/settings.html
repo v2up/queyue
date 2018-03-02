@@ -1,0 +1,78 @@
+{% extends "bootstrap/base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-CN') }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/admin.css') }}">
+{% endblock %}
+
+{% block title %}控制台{% endblock %}
+
+{% block content %}
+<!-- 问候信息 -->
+<div class="greet">
+	<h2 class="text-center">欢迎你，{{ current_admin.eno }}</h2>
+</div>
+
+<!-- 消息栏 -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+	<div class="alert {{ category }} alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<span>{{ message }}</span>
+	</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- 功能导航 -->
+<div class="container">
+	<!-- tabs -->
+	<ul class="nav nav-tabs">
+	   	<li>
+	   		<a href="{{ url_for('admin.certi') }}">机构资质管理</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('admin.cate') }}">活动类型管理</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('admin.misc') }}">杂项</a>
+	   	</li>
+	   	<li class="active">
+	   		<a href="{{ url_for('admin.settings') }}">管理员账号管理</a>
+	   	</li>
+	</ul>
+
+	<!-- 账号设置 -->
+	<div class="tab-pane">
+		<div class="row">
+			<div class="col-xs-8 mainbar">
+				<h2>修改密码</h2>
+				{{ wtf.quick_form(admin_form, button_map={'submit': 'success pull-right'}) }}
+			</div>
+
+			<div class="col-xs-1"></div>
+
+			<div class="col-xs-3 sidebar">
+				<ul class="list-unstyled">
+					<li class="h4">
+						<span>&gt;&nbsp;</span><a href="{{ url_for('admin.logout') }}">退出控制台</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+{% endblock %}

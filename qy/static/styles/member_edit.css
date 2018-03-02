@@ -1,0 +1,21 @@
+#mainbar {
+	background-color: #F8FAFF;
+}
+
+#sidebar {
+	background-color: #EFFFE9;
+}
+
+.avatar {
+	width: 120px;
+	height: 120px;
+}
+
+.portrait {
+	width: 240px;
+	height: 360px;
+}
+
+#intro {
+	 height: 17em;
+}

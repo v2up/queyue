@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}{{ member.name }}{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/member.css') }}">
+{% endblock %}
+
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div id="mainbar" class="col-md-8">
+			<h1>
+				<a href="">
+					<img class="img-thumbnail avatar" src="{{ member.avatar_url }}">
+				</a>
+				<span id="name" class="">{{ member.name }}</span>
+				<span class="small">{{ member.signature if member.signature != None else '' }}</span>
+			</h1>
+
+			<!-- 注意不同视角 -->
+			{% if current_user.is_authenticated %}
+				{% if current_user.id == member.id %}
+				<ul class="list-inline">
+					<li><a class="navlist" href="{{ url_for('member.member_page', userid=current_user.id) }}" target="_blank">我的主页</a></li>
+					<li><a class="navlist" href="" target="_blank">活动</a></li>
+					<li><a class="navlist" href="{{ url_for('group.group_index') }}" target="_blank">小组</a></li>
+					<li><a class="navlist" href="{{ url_for('member.member_edit') }}" target="_blank">账户管理</a></li>
+					<li><a class="navlist" href="" target="_blank">设置</a></li>
+				</ul>
+				{% else %}
+				<ul class="list-inline">
+					{% if current_user.is_following(member) %}
+					<li>
+						<span>我已关注ta</span>
+						<span>（</span>
+						<a class="navlist" href="{{ url_for('member.unfollow', userid=member.id) }}">取消关注</a>
+						<span>）</span>
+					</li>
+					{% else %}
+					<li><a class="navlist" href="{{ url_for('member.follow', userid=member.id) }}">关注ta</a></li>
+					{% endif %}
+				</ul>
+				{% endif %}
+			{% endif %}
+
+			<hr />
+
+			<div>
+				<h3 class="item">
+					</span>{{ '我' if current_user.id == member.id else member.name }}的碎碎念&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+					<span>（<a href="{{ url_for('member.stuff', userid=member.id, obj='twitters') }}" target="_blank">全部</a>）</span>
+				</h3>
+				<div>
+					{% for twitter in twitters %}
+					<blockquote>
+						<p>{{ twitter.content }}</p>
+					</blockquote>
+					<p>
+						<small class="text-muted">发表于{{ moment(twitter.post_time, local=True).fromNow() }}</small>
+						{% if current_user.id == member.id %}
+						<small class="text-muted">&nbsp;&nbsp;&brvbar;&nbsp;&nbsp;</small>
+						<small><a href="{{ url_for('main.delete_twitter', id=twitter.id, next=request.path) }}">删除</a></small>
+						{% endif %}
+
+					</p>
+					<hr />
+					{% endfor %}
+				</div>
+			</div>
+
+			<div>
+				<h3 class="item">
+					</span>{{ '我' if current_user.id == member.id else member.name }}的活动&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+					<span>（共 <a href="{{ url_for('member.stuff', userid=member.id, obj='events') }}" target="_blank">{{ events|length }}</a> 项）</span>
+				</h3>
+				<div>
+					<ul>
+					{% for event in events %}
+						<li>
+							<a href="{{ url_for('event.event_page', eid=event.id) }}" target="_blank">{{ event.name }}</a>
+						</li>
+					{% endfor %}
+					</ul>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="item">
+					</span>{{ '我' if current_user.id == member.id else member.name }}的小组&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+					<span>（共 <a href="{{ url_for('member.stuff', userid=member.id, obj='groups') }}" target="_blank">{{ groups|length }}</a> 个）</span>
+				</h3>
+				<div>
+					{% for group in groups %}
+						<a href="{{ url_for('group.group_page', gid=group.id) }}" target="_blank">
+							<img class="img-thumbnail miniava" src="{{ group.icon_url }}" 
+								title="{{ group.name }}" alt="{{ group.name }}">
+						</a>
+					{% endfor %}
+				</div>
+				<hr />
+			</div>
+
+			<div>
+				<h3 class="item">
+					<span>{{ '我' if current_user.id == member.id else member.name }}的关系&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+					<span>（<a href="{{ url_for('member.stuff', userid=member.id, obj='socials') }}" target="_blank">所有关系</a>）</span>
+				</h3>
+				<div>
+					<div>
+						<span>关注者&nbsp;&nbsp;</span>
+						{% for follower in followers %}
+						<a href="{{ url_for('member.member_page', userid=follower.id) }}" target="_blank">
+							<img class="img-thumbnail miniava" src="{{ follower.avatar_url }}" 
+								title="{{ follower.name }}" alt="{{ follower.name }}">
+						</a>
+						{% endfor %}
+					</div>
+					<hr />
+					<div>
+						<span>关注了&nbsp;&nbsp;</span>
+						{% for followed in followeds %}
+						<a href="{{ url_for('member.member_page', userid=followed.id) }}" target="_blank">
+							<img class="img-thumbnail miniava" src="{{ followed.avatar_url }}" 
+								title="{{ followed.name }}" alt="{{ followed.name }}">
+						</a>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="item">
+					<span>{{ '我' if current_user.id == member.id else member.name }}的标记&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+					<span>（<a href="{{ url_for('member.stuff', userid=member.id, obj='marks') }}" target="_blank">全部</a>）</span>
+				</h3>
+				<div>
+					<ul class="">
+						{% for mark in marks %}
+						<li><a href="{{ mark.url }}" target="_blank">{{ mark.title }}</a></li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+
+			
+		</div>
+
+		<div class="col-md-1"><!-- 主栏与侧栏之间的留白 --></div>
+
+		<div id='sidebar' class="col-md-3">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h4 class="panel-title">{{ member.name }}</h4>
+				</div>
+				<div class="panel-body">
+					<img id="portrait" src="{{ member.portrait_url }}" >
+				</div>
+				<div class="panel-footer">
+					<!-- <p>现居地：<a href="" target="_blank">美国加州</a></p> -->
+					<p>{{ member.reg_date }} 加入</p>
+				</div>
+			</div>
+
+			<div>
+				<!-- 个人简介 -->
+				<p id="intro">{{ member.intro if member.intro != None else '' }}</p>
+			</div>
+
+		</div>
+	</div>
+</div>
+{% endblock %}

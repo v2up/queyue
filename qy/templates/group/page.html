@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}{{ group.name }} - 小组 | 雀跃{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/group_page.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="container">
+	<div class="row">
+		<div id="mainbar" class="col-md-8">
+			<!-- 资料区 -->
+			<div>
+				<h2>
+					<img class="icon img-thumbnail" src="{{ group.icon_url }}">	
+					<span id="name" class="">{{ group.name }}</span>
+				</h2>
+				<p class="intro">{{ group.intro }}</p>
+			</div>
+
+			<hr />
+
+			<!-- 话题列表 -->
+			<div>
+				<table class="table table-hover">	<!-- list-unstyled -->
+					<caption>小组中的话题</caption>
+					<thead>
+						<th>序号</th>
+						<th>标题</th>
+						<th>时间</th>
+						<th>热度</th>
+					</thead>
+					<tbody>
+					{% for topic in topics %}
+					<tr>
+						<th scope="row">{{ loop.index }}</th>
+						<td><a href="{{ url_for('group.topic_page', gid=group.id, tid=topic.id) }}" target="_blank">{{ topic.title }}</a></td>
+						<td>{{  moment(topic.post_time, local=True).fromNow() }}</td>
+						<td>{{ topic.discus.count() }}</td>
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			</div><!-- 话题列表 -->
+
+			<!-- 分页器 -->
+			{% if pagination %}
+			<div>
+				{{ macros.pagination_widget(pagination, 'group.group_page', gid=group.id) }}
+			</div>
+			{% endif %}
+		</div>
+
+		<div class="col-md-1"><!-- 留白 --></div>
+
+		<div id='sidebar' class="col-md-3">
+			<!-- 基本信息 -->
+			<div>
+				<h4>小组长：</h4>
+				<div class="text-center">
+					{% set userid = group.owner.id %}
+					<a href="{{ url_for('member.member_page', userid=userid) }}" target="_blank">
+						<img class="avatar img-thumbnail" src="{{ group.owner.avatar_url }}" title="{{ group.owner.name }}" alt="{{ group.owner.name }}">
+					</a>
+				</div>
+				<p><br />于 {{ group.birthday }} 创建</p>
+				<hr />
+
+				<h4>
+					</span>组员&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;&nbsp;&middot;</span>
+					<span>（共 {{ members|length }} 位）</span>
+				</h4>
+				<div>
+					{% for member in members %}
+					<a href="{{ url_for('member.member_page', userid=member.id) }}" target="_blank">
+						<img class="avatar img-thumbnail" src="{{ member.avatar_url }}" title="{{ member.name }}" alt="{{ member.name }}" />
+					</a>
+					{% endfor %}
+				</div>
+
+			</div>
+
+			<hr />
+
+			{% if current_user.is_authenticated %}
+			<!-- 功能指引 -->
+			<ul class="list-unstyled">
+				<!-- 三种情况：拥有者，成员，『陌生人』 -->
+				{% if current_user.id == group.owner_id %}
+				<li>&gt;&nbsp;<a href="" target="_blank">更改小组资料</a></li>
+				<li>&gt;&nbsp;<a href="">删除这个小组</a></li>
+				{% elif current_user.is_joining(group) %}
+				<li>&gt;&nbsp;我已加入这个小组（<a href="{{ url_for('group.exit', gid=group.id) }}">退出小组</a>）</li>
+				{% else %}
+				<li>&gt;&nbsp;<a href="{{ url_for('group.join', gid=group.id) }}">加入小组</a></li>
+				{% endif %}
+			</ul>
+			{% endif %}
+
+			{% if current_user.is_authenticated %}
+				<!-- 发布新话题 -->
+				{% if current_user.is_joining(group) %}
+				<div>
+					<span>
+						<span>&gt;</span>
+						<a href="" data-toggle="modal" data-target="#new_topic">发布新话题</a>
+					</span>
+					<div class="modal fade" id="new_topic" tabindex="-1" role="dialog" >
+						<div class="modal-dialog">
+					    	<div class="modal-content">
+					        	<div class="modal-header">
+					        		<button type="button" class="close" data-dismiss="modal">&times;</button>
+					        		<h4 class="modal-title">发布新话题</h4>
+					        	</div>
+					        	<div class="modal-body">
+					            	{{ wtf.quick_form(form, button_map={'post': 'success'}) }}
+					        	</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% endif %}
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+ 

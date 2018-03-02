@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/insti_signup.css') }}">
+{% endblock %}
+
+{% block title %}激活机构账户 | 雀跃{%endblock%}
+
+{% block body %}
+<div class="container-fluid">
+	<div class="row">
+		<!-- 留『白』 -->
+		<div class="col-md-1"></div>
+
+		<!-- 表单 -->
+		<div class="col-md-5">
+			<h1>激活机构账户</h1>
+
+			<!-- 消息栏 -->
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			  {% if messages %}
+			    {% for category, message in messages %}
+		    	<div class="alert {{ category }} alert-dismissible" role="alert">
+					<span>{{ message }}</span>
+				</div>
+			    {% endfor %}
+			  {% endif %}
+			{% endwith %}
+
+			<hr />
+			<!-- button_map给提交按钮的背景色搞成绿色 -->
+			{{ wtf.quick_form(form, button_map={'submit': 'success'}) }}
+
+			<hr />
+			<p>已有账户？<a href="">登录</a></p>
+			<p>需要<a href="">帮助</a>？</p>
+		</div>
+
+		<!-- 留『白』 -->
+		<div class="col-md-5"></div>
+	</div>
+</div>
+{% endblock %}

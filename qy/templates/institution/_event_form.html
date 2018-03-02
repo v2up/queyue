@@ -1,0 +1,173 @@
+<form class="form-horizontal" role="form" action method="post" enctype="multipart/form-data">
+	{{ event_form.csrf_token }}
+	<!-- 活动名称 -->
+	<div class="form-group">
+    	{{ event_form.name.label(class_='col-xs-2 control-label') }}
+    	<div class="col-xs-10">
+	    	{{ event_form.name(class_="form-control") }}
+	    </div>
+	</div>
+	<!-- 活动类型 -->
+	<div class="form-group">
+    	{{ event_form.category.label(class_='col-xs-2 control-label') }}
+    	<div class="col-xs-4">
+    		{{ event_form.category(class_="form-control") }}
+    	</div>
+	</div>
+	<!-- 开始时间 -->
+	<div class="form-group">
+    	{{ event_form.start_time.label(class_='col-xs-2 control-label') }}
+		<div class="col-xs-4">    
+	    	{{ event_form.start_time(class_="form-control", readonly=true) }}
+	    </div>
+	</div>
+	<!-- 结束时间 -->
+	<div class="form-group">
+    	{{ event_form.end_time.label(class_='col-xs-2 control-label') }}
+    	<div class="col-xs-4">
+    		{{ event_form.end_time(class_="form-control", readonly=true) }}
+    	</div>
+	</div>
+	<!-- 地点 -->
+	<div class="form-group">
+    	<label class="col-xs-2 control-label" for="map_container">地点标记</label>
+    	<div class="col-xs-10">
+	    	<div id="map_container" style="min-width:400px; min-height:400px;">
+	    	</div>
+	    	<p id="map_info" class="text-danger"></p>
+	    	{{ event_form.longitude }}
+	    	{{ event_form.latitude }}
+	    	
+	    </div>
+	</div>
+	<!-- 具体地址 -->
+	<div class="form-group">
+    	<label class="col-xs-2 control-label" for="map_container">具体地址</label>
+    	<div class="col-xs-10">
+	    	{{ event_form.address(class_="form-control") }}
+	    </div>
+	</div>
+	<!-- 详情 -->
+	<div class="form-group">
+    	{{ event_form.detail.label(class_='col-xs-2 control-label') }}
+    	<div class="col-xs-10">
+	    	{{ event_form.detail(class_="form-control", rows='10') }}
+	    </div>
+	</div>
+	<!-- 提交 -->
+	<div class="form-group">
+	    <!-- <div class="col-xs-2"></div> -->
+    	<div class="col-xs-12">
+	    	{{ event_form.new(class_="form-control btn-success") }}
+	    </div>
+	    <!-- <div class="col-xs-2"></div> -->
+	</div>
+
+	<!-- JS：时间选择器-->
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-datetimepicker.min.js') }}" charset="UTF-8"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap-datetimepicker.zh-CN.js') }}" charset="UTF-8"></script>
+	<script type="text/javascript">
+		$('#start_time').datetimepicker(
+				{
+					format: 'yyyy-mm-dd hh:ii'
+				}
+			);
+		$('#end_time').datetimepicker(
+				{
+					format: 'yyyy-mm-dd hh:ii'
+				}
+			);
+	</script>
+
+	<!-- 高德地图JS -->
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=8323ea875aa64454ec94dd60df766ffa"></script>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=8323ea875aa64454ec94dd60df766ffa&plugin=AMap.Geocoder"></script>
+	<script type="text/javascript">
+		// 文档加载完成后，地图服务
+		function map_service(){
+			var map, geolocation;
+
+		    // 地图
+		    map = new AMap.Map('map_container', 
+		    	{
+		        	zoom: 18,
+		        }
+		    );
+
+		    // AMap.Geolocation 插件
+		    AMap.plugin('AMap.Geolocation', function() {
+		        geolocation = new AMap.Geolocation(
+		        	{
+			            enableHighAccuracy: true,//是否使用高精度定位，默认:true
+			            timeout: 10000,          //超过10秒后停止定位，默认：无穷大
+			            buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+			            zoomToAccuracy: true,      //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+			            buttonPosition:'RB',
+			            showCircle: false,
+			            showMarker: false,
+			        }
+			    );
+		        map.addControl(geolocation);
+		        geolocation.getCurrentPosition();
+		        AMap.event.addListener(geolocation, 'complete', onComplete);//返回定位信息
+		        AMap.event.addListener(geolocation, 'error', onError);      //返回定位出错信息
+		    });
+
+		    // 定位成功
+		    function onComplete(data) {
+		    	var toolBar, scale, marker, geocoder
+
+		        // 控件
+			    AMap.plugin(['AMap.ToolBar', 'AMap.Scale'], function(){
+				    toolBar = new AMap.ToolBar();
+				    scale = new AMap.Scale();
+				    map.addControl(toolBar);
+				    map.addControl(scale);
+				});
+
+			    // 标记
+			    marker = new AMap.Marker(
+		    		{
+		    			icon: 'http://i2.buimg.com/643be47c3ab88228.png',
+		    			draggable: true,
+		    			map: map,
+		    		}
+		    	);
+		    	AMap.event.addListener(marker, 'dragend', getPoint)
+		    	function getPoint(e) {
+		    		regeocoder();
+		    	}
+
+		    	// 标记结束后也逆地理编码一次
+			    regeocoder();
+
+			    // 逆地理编码
+			    function regeocoder() {
+			        geocoder = new AMap.Geocoder({
+			            radius: 1000,
+			            extensions: "all"
+			        });        
+			        geocoder.getAddress(marker.getPosition(), function(status, result) {
+			            if (status === 'complete' && result.info === 'OK') {
+			                geocoder_CallBack(result);
+			            }
+			        });
+			    };
+
+			    function geocoder_CallBack(data) {
+			        document.getElementById('address').value = data.regeocode.formattedAddress;
+			        document.getElementById('longitude').value = marker.getPosition().getLng();
+			        document.getElementById('latitude').value = marker.getPosition().getLat();
+			    }
+		    	
+		    };
+		    // 定位失败
+		    function onError(data) {
+		        document.getElementById('map_info').innerHTML = 'Sooooorry 定位失败';
+		    };
+		}
+
+		window.addEventListener("load", map_service);
+	</script>
+</form>

@@ -1,0 +1,11 @@
+body {/*标签的CSS前面什么都不用加*/
+	background-image: url('../images/log_bg.jpg');	/*url内写相对路径*/
+	background-color: #8B1042;	/*当背景图不可用，背景颜色可以呈现好的视觉效果*/
+}
+.container {
+	margin-top: 5em;
+}
+.col-md-5 {
+	background-color: #FFFFFF;
+	padding-bottom: 2em;
+}

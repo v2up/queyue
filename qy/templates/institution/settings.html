@@ -1,0 +1,80 @@
+{% extends "bootstrap/base.html" %}
+
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang('zh-CN') }}
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/insti_panel.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/bootstrap-datetimepicker.min.css') }}">
+{% endblock %}
+
+{% block title %}账户设置 - 机构后台{% endblock %}
+
+{% block content %}
+<!-- 问候信息 -->
+<div>
+	<h2 class="greet text-center">欢迎你，{{ insti.name or insti.uurl|upper }}</h2>
+</div>
+
+<!-- 消息栏 -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+	<div class="alert {{ category }} alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<span>{{ message }}</span>
+	</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- 功能板 -->
+<div class="container">
+	<!-- tabs -->
+	<ul class="nav nav-tabs">
+	   	<li> 
+	   		<a href="{{ url_for('institution.notifi', uurl=insti.uurl) }}">通知</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.event', uurl=insti.uurl) }}">活动管理</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.new_event', uurl=insti.uurl) }}">发布活动</a>
+	   	</li>
+	   	<li>
+	   		<a href="{{ url_for('institution.profile', uurl=insti.uurl) }}">机构资料展示</a>
+	   	</li>
+	   	<li class="active">
+	   		<a href="{{ url_for('institution.settings', uurl=insti.uurl) }}">账户设置</a>
+	   	</li>
+	</ul>
+
+
+	<!-- 账户设置 -->
+	<div class="tab-pane">
+		<div class="row">
+			<div class="col-md-8">
+				<h2>修改密码</h2>
+				{{ wtf.quick_form(security_form, button_map={'submit': 'success pull-right'}) }}
+			</div>
+
+			<div class="col-md-1"></div>
+
+			<div class="col-md-3">
+				<ul class="list-unstyled">
+					<li><span>&gt;&nbsp;</span><a href="{{ url_for('auth.signout') }}">退出后台</a></li>
+				</ul>
+			</div>
+		</div><!-- row -->
+	</div><!-- tab-pane -->
+
+</div>
+{% endblock %}
